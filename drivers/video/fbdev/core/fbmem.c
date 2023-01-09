@@ -53,9 +53,9 @@ EXPORT_SYMBOL(registered_fb);
 int num_registered_fb __read_mostly;
 EXPORT_SYMBOL(num_registered_fb);
 
-bool fb_center_logo __read_mostly;
+bool fb_center_logo __read_mostly = true;
 
-int fb_logo_count __read_mostly = -1;
+int fb_logo_count __read_mostly = 1;
 
 static struct fb_info *get_fb_info(unsigned int idx)
 {
@@ -516,6 +516,13 @@ static int fb_show_logo_line(struct fb_info *info, int rotate,
 		image.dx = (xres - (n * (logo->width + 8) - 8)) / 2;
 		image.dy = y ?: (yres - logo->height) / 2;
 	} else {
+		if (rotate == FB_ROTATE_UR || rotate == FB_ROTATE_UD) {
+			image.dx = (info->var.xres - logo->width) / 2;
+			image.dy = (info->var.yres - logo->height) / 2;
+		} else {
+			image.dy = (info->var.xres - logo->height) / 2;
+			image.dx = (info->var.yres - logo->width) / 2;
+		}
 		image.dx = 0;
 		image.dy = y;
 	}

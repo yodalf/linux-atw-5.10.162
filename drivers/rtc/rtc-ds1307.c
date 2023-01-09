@@ -10,6 +10,7 @@
 
 #include <linux/acpi.h>
 #include <linux/bcd.h>
+#include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -232,8 +233,21 @@ static int ds1307_get_time(struct device *dev, struct rtc_time *t)
 	ret = regmap_bulk_read(ds1307->regmap, chip->offset, regs,
 			       sizeof(regs));
 	if (ret) {
-		dev_err(dev, "%s error %d\n", "read", ret);
-		return ret;
+		/*
+		 * The m41t00 sometimes does not respond to the second read on 
+		 * Kernel boot. Maybe as a result of too fast access to the device,
+		 * datasheet requests 5us idle time of the bus after a transfer.
+		 * The failing read is the read for hctosys, causing the 
+		 * system time to be 1.1.1970 . A second read after a short sleep
+		 * seems to fix this issue.
+		 */
+		msleep(1);
+		ret = regmap_bulk_read(ds1307->regmap, chip->offset, regs,
+				       sizeof(regs));
+		if (ret) {
+			dev_err(dev, "%s error %d\n", "read", ret);
+			return ret;
+		}
 	}
 
 	dev_dbg(dev, "%s: %7ph\n", "read", regs);
@@ -356,6 +370,13 @@ static int ds1307_set_time(struct device *dev, struct rtc_time *t)
 
 	/* assume 20YY not 19YY */
 	tmp = t->tm_year - 100;
+
+	/* bin2bcd does not handle negative numbers correctly */
+	if(tmp < 0) {
+		dev_err(dev," write: dates with year < 2000 are not allowed!\n");
+		return -EINVAL;
+	}
+
 	regs[DS1307_REG_YEAR] = bin2bcd(tmp);
 
 	if (chip->century_enable_bit)

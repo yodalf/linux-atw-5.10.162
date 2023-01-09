@@ -170,6 +170,13 @@ static int compare_of(struct device *dev, void *data)
 		return pdata->of_node == np;
 	}
 
+	/* Special case for DI, dev->of_node may not be set yet */
+	if (strcmp(dev->driver->name, "imx-ipuv3-crtc") == 0) {
+		struct ipu_client_platformdata *pdata = dev->platform_data;
+
+		return pdata->of_node == np;
+	}
+
 	/* Special case for LDB, one device for two channels */
 	if (of_node_name_eq(np, "lvds-channel")) {
 		np = of_get_parent(np);

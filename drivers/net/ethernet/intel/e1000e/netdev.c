@@ -4187,6 +4187,15 @@ void e1000e_reset(struct e1000_adapter *adapter)
 		phy_data &= ~IGP02E1000_PM_SPD;
 		e1e_wphy(hw, IGP02E1000_PHY_POWER_MGMT, phy_data);
 	}
+
+	{
+		u16 phy_data = 0;
+		/* Cooper specific control registger 1, disable energy detect. */
+		e1e_rphy(hw, 0x10, &phy_data);
+		phy_data &= ~(3 << 8);
+		e1e_wphy(hw, 0x10, phy_data);
+	}
+
 	if (hw->mac.type >= e1000_pch_spt && adapter->int_mode == 0) {
 		u32 reg;
 

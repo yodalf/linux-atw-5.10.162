@@ -416,10 +416,10 @@ dtb-$(CONFIG_SOC_IMX53) += \
 	imx53-voipac-bsb.dtb
 dtb-$(CONFIG_SOC_IMX6Q) += \
 	imx6dl-apf6dev.dtb \
-	imx6dl-aristainetos_4.dtb \
-	imx6dl-aristainetos_7.dtb \
-	imx6dl-aristainetos2_4.dtb \
-	imx6dl-aristainetos2_7.dtb \
+	imx6dl-aristainetos2c-cslb_7.dtb \
+	imx6dl-aristainetos2d_7.dtb \
+	imx6dl-aristainetos2d-cslc_7.dtb \
+	imx6dl-aristainetos2d-helios_7.dtb \
 	imx6dl-colibri-eval-v3.dtb \
 	imx6dl-colibri-v1_1-eval-v3.dtb \
 	imx6dl-cubox-i.dtb \

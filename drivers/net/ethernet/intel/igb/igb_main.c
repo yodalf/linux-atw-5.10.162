@@ -3155,6 +3155,7 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	struct igb_adapter *adapter;
 	struct e1000_hw *hw;
 	u16 eeprom_data = 0;
+	u16 data = 0;
 	s32 ret_val;
 	static int global_quad_port_a; /* global quad port a indication */
 	const struct e1000_info *ei = igb_info_tbl[ent->driver_data];
@@ -3600,6 +3601,10 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE);
+
+	data = rd32(E1000_82580_PHY_POWER_MGMT);
+	hw->phy.smart_speed = e1000_smart_speed_off;
+	wr32(E1000_82580_PHY_POWER_MGMT, data &= ~E1000_82580_PM_SPD);
 
 	pm_runtime_put_noidle(&pdev->dev);
 	return 0;

@@ -995,6 +995,8 @@ static struct spi_imx_devtype_data imx35_cspi_devtype_data = {
 	.devtype = IMX35_CSPI,
 };
 
+// disable dynamic_burst for the imx51_ecspi, which is also used on the i.MX6
+// the burst-code seems to have a bug, causing the high-speed communication to fail.
 static struct spi_imx_devtype_data imx51_ecspi_devtype_data = {
 	.intctrl = mx51_ecspi_intctrl,
 	.prepare_message = mx51_ecspi_prepare_message,
@@ -1006,7 +1008,7 @@ static struct spi_imx_devtype_data imx51_ecspi_devtype_data = {
 	.disable_dma = mx51_disable_dma,
 	.fifo_size = 64,
 	.has_dmamode = true,
-	.dynamic_burst = true,
+	.dynamic_burst = false,
 	.has_slavemode = true,
 	.disable = mx51_ecspi_disable,
 	.devtype = IMX51_ECSPI,
